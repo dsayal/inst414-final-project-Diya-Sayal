@@ -1,56 +1,34 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 
-def load_processed_data(file_path):
-    """
-    Load the processed data from a CSV file.
-
-    Parameters:
-    file_path (str): The path to the CSV file containing the processed data.
-
-    Returns:
-    pd.DataFrame: A pandas DataFrame containing the loaded data.
-    """
-    data = pd.read_csv(file_path)
-    return data
-
-def train_model(data):
-    """
-    Train a RandomForestClassifier model on the provided data.
-
-    This function splits the data into training and test sets, trains a RandomForestClassifier
-    on the training data, and evaluates its accuracy on the test data.
-
-    Parameters:
-    data (pd.DataFrame): The processed data containing features and target.
-
-    Returns:
-    model (RandomForestClassifier): The trained RandomForestClassifier model.
-    accuracy (float): The accuracy score of the model on the test data.
-    """
-    # Example analysis
-    X = data.drop('Location_of_Breached_Information', axis=1)
-    y = data['Location_of_Breached_Information']
+def train_and_save_model():
+    # Update the path to the dataset
+    df = pd.read_csv('/Users/diyasayal/Desktop/INST414/databreaches.csv')
     
+    # Print the column names to check the actual names
+    print("Columns in the DataFrame:", df.columns)
+    
+    # Proceed with the rest of your code
+    X = df.drop('Type_Of_Breach', axis=1)  # Feature columns
+    y = df['Type_Of_Breach']               # Target column
+
+    # Convert categorical variables to numerical if necessary
+    X = pd.get_dummies(X)
+
+    # Split the data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    model = RandomForestClassifier()
+    
+    # Create and train the Decision Tree model
+    model = DecisionTreeClassifier()
     model.fit(X_train, y_train)
     
-    y_pred = model.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
+    # Save the model
+    joblib.dump(model, 'model/databreaches_model.pkl')
     
-    return model, accuracy
+    # Evaluate the model
+    y_pred = model.predict(X_test)
+    print("Accuracy:", accuracy_score(y_test, y_pred))
+    print("Classification Report:\n", classification_report(y_test, y_pred))
 
 if __name__ == "__main__":
-    """
-    Main execution block.
+    train_and_save_model()
 
-    This block loads the processed data, trains the RandomForestClassifier model,
-    and prints the model's accuracy.
-    """
-    file_path = 'data/processed/cleaned_cyber_security_breaches.csv'
-    data = load_processed_data(file_path)
-    model, accuracy = train_model(data)
-    print(f'Model Accuracy: {accuracy}')
