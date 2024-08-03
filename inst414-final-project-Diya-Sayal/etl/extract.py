@@ -1,26 +1,52 @@
 import pandas as pd
+import sqlalchemy
+import requests
+import os
 
-def extract_data(file_path):
+def extract_databreaches_data():
     """
-    Extract data from a CSV file.
-
-    Parameters:
-    file_path (str): The path to the CSV file to be read.
-
-    Returns:
-    pd.DataFrame: A pandas DataFrame containing the extracted data.
+    Extract data from the Kaggle database.
     """
-    data = pd.read_csv(file_path)
-    return data
+    # Create a database connection
+    engine = sqlalchemy.create_engine('postgresql://username:password@host:port/database')
+
+    # Define the SQL query
+    query = """
+    SELECT * FROM your_table
+    """
+
+    # Execute the query and load the data into a DataFrame
+    df = pd.read_sql_query(query, engine)
+
+    # Save the DataFrame to a CSV file
+    os.makedirs('data/extracted', exist_ok=True)
+    df.to_csv('data/extracted/databreaches_data.csv', index=False)
+
+    return df
+
+def extract_cyberbreaches_data():
+    """
+    Extract data from Kaggle.
+    """
+
+    
+    # For a CSV file
+    df = pd.read_csv('path_to_your_csv_file.csv')
+
+
+
+    # Save the DataFrame to a CSV file
+    os.makedirs('data/extracted', exist_ok=True)
+    df.to_csv('data/extracted/cyberbreaches_data.csv', index=False)
+
+    return df
+
+def main():
+    
+    databreaches_data  = extract_databreaches_data()
+
+   
+    cyberbreaches_data = extract_cyberbreaches_data()
 
 if __name__ == "__main__":
-    """
-    Main execution block.
-
-    This block extracts data from the specified CSV file, saves it to a new CSV file
-    in the 'data/extracted' directory, and prints a success message.
-    """
-    file_path = 'data/raw/Cyber Security Breaches.csv'
-    data = extract_data(file_path)
-    data.to_csv('data/extracted/cyber_security_breaches.csv', index=False)
-    print("Data extracted successfully.")
+    main()
