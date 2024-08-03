@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 import joblib
 import os
 
@@ -11,10 +12,15 @@ def train_and_save_model():
     """
     # Load data
     df = pd.read_csv('data/processed/databreaches_data_transformed.csv')
-    X = df.drop(columns=['Organization type'])  # Assuming all columns except target are features
-    y = df['Organization type']  # Target variable
+    
+    # Convert categorical features to numeric using LabelEncoder
+    le = LabelEncoder()
+    df_encoded = df.apply(le.fit_transform)  # Encode all columns
 
     # Split data
+    X = df_encoded.drop(columns=['Organization type'])
+    y = df_encoded['Organization type']
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
     # Initialize and train model
@@ -38,10 +44,13 @@ def evaluate_databreaches_model():
 
     # Load test data
     df = pd.read_csv('data/processed/databreaches_data_transformed.csv')
-    print("Data columns:", df.columns)  # Debug print to check columns
+    
+    # Convert categorical features to numeric using the same LabelEncoder
+    le = LabelEncoder()
+    df_encoded = df.apply(le.fit_transform)
 
-    X_test = df.drop(columns=['Organization type'])  # Features
-    y_true = df['Organization type']  # True labels
+    X_test = df_encoded.drop(columns=['Organization type'])
+    y_true = df_encoded['Organization type']
 
     # Predict
     y_pred = model.predict(X_test)
@@ -60,6 +69,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
