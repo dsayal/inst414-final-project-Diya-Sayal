@@ -6,14 +6,14 @@ import joblib
 
 def train_and_save_model():
     # Load the dataset
-    df = pd.read_csv('data/databreaches.csv')  # Update the path as needed
+    df = pd.read_csv('/Users/diyasayal/Desktop/INST414/databreaches.csv') 
 
     # Check for and handle missing values
     print("Missing values in the dataset:")
     print(df.isna().sum())
     
     # Handle missing values
-    df = df.dropna()  # Remove rows with missing values; adjust as needed
+    df = df.dropna()  # Dropping rows with missing values
 
     # Print columns for debugging
     print("Columns in the DataFrame:")
@@ -29,11 +29,11 @@ def train_and_save_model():
             label_encoders[col] = le
 
     # Select features and target
-    X = df.drop('Type_Of_Breach', axis=1, errors='ignore')  # Adjust if 'Type_Of_Breach' is not the correct column
-    y = df['Type_Of_Breach']  # Adjust if 'Type_Of_Breach' is not the correct column
+    X = df.drop('Method', axis=1, errors='ignore')  # Features
+    y = df['Method']  # Target variable
 
     # Convert categorical features to numerical if needed
-    #X = pd.get_dummies(X)  # Uncomment if needed for other categorical columns
+    X = pd.get_dummies(X) 
 
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -49,6 +49,7 @@ def train_and_save_model():
 
 if __name__ == "__main__":
     train_and_save_model()
+
 
 
 
