@@ -5,6 +5,19 @@ from sklearn.preprocessing import LabelEncoder
 import joblib
 
 def train_and_save_model():
+    """
+    Train a Decision Tree model using the breach data and save it to a file.
+    
+    The function performs the following steps:
+    1. Loads the dataset from a CSV file.
+    2. Handles missing values by dropping rows with NaN values.
+    3. Encodes categorical features to numeric values using LabelEncoder.
+    4. Selects features and target variables.
+    5. Converts categorical features to dummy variables if needed.
+    6. Splits the data into training and testing sets.
+    7. Initializes and trains a DecisionTreeClassifier model.
+    8. Saves the trained model to a file.
+    """
     # Load the dataset
     df = pd.read_csv('/Users/diyasayal/Desktop/INST414/databreaches.csv') 
 
