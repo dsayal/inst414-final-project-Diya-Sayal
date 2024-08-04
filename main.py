@@ -1,7 +1,6 @@
 from etl.extract import extract_databreaches_data, extract_cyberbreaches_data
 from etl.transform import transform_databreaches_data, transform_cyberbreaches_data
-from analysis.model.train import train_and_save_model
-from analysis.model.evaluate import evaluate_databreaches_model
+from analysis.model import train_and_save_model, evaluate_databreaches_model
 from etl.load import load_databreaches_data, load_cyberbreaches_data
 from vis.visualize import visualize_data
 
@@ -38,4 +37,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
