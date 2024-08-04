@@ -3,6 +3,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def visualize_data():
+    """
+    Visualize the databreaches data with various plots.
+
+    This function performs the following visualizations:
+    1. Distribution of Records: A histogram with KDE to show the distribution of the 'Records' column.
+    2. Count of Breaches by Method: A count plot to show the frequency of different breach methods.
+
+    The function saves the visualizations as PNG files in the 'vis/' directory and displays them.
+    """
     # Load the processed data
     df = pd.read_csv('/System/Volumes/Data/Users/diyasayal/Desktop/INST414/databreaches.csv')
 
