@@ -8,7 +8,14 @@ import os
 
 def train_and_save_model():
     """
-    Train a model and save it to a file.
+    Train a RandomForest model using the processed breach data and save it to a file.
+    
+    The function performs the following steps:
+    1. Loads the transformed dataset from a CSV file.
+    2. Encodes categorical features to numeric values using LabelEncoder.
+    3. Splits the data into training and testing sets.
+    4. Initializes and trains a RandomForestClassifier model.
+    5. Saves the trained model to a file.
     """
     # Load data
     df = pd.read_csv('data/processed/databreaches_data_transformed.csv')
@@ -32,7 +39,15 @@ def train_and_save_model():
 
 def evaluate_databreaches_model():
     """
-    Evaluate metrics for the databreaches data.
+    Evaluate the performance of the trained RandomForest model on the test dataset.
+    
+    The function performs the following steps:
+    1. Checks if the model file exists and loads it.
+    2. Loads the test dataset from a CSV file.
+    3. Encodes categorical features to numeric values using LabelEncoder.
+    4. Splits the data into features and target variables.
+    5. Predicts the target values using the loaded model.
+    6. Evaluates the model's performance using confusion matrix and classification report.
     """
     model_path = 'model/databreaches_model.pkl'
     if not os.path.exists(model_path):
@@ -63,12 +78,19 @@ def evaluate_databreaches_model():
     print("Databreaches Data Classification Report:\n", report)
 
 def main():
-    train_and_save_model()
+    """
+    Execute the training and evaluation of the RandomForest model.
     
+    The function calls:
+    - `train_and_save_model()`: To train and save the model.
+    - `evaluate_databreaches_model()`: To evaluate the saved model's performance.
+    """
+    train_and_save_model()
     evaluate_databreaches_model()
 
 if __name__ == "__main__":
     main()
+
 
 
 

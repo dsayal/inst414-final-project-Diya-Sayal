@@ -25,5 +25,5 @@ The project focuses on identifying gaps and trends in data breach incidents in h
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/inst414-final-project-Diya-Sayal.git
+   git clone https://github.com/dsayal/inst414-final-project-Diya-Sayal.git
    cd inst414-final-project-Diya-Sayal
