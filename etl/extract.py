@@ -10,11 +10,13 @@ def download_kaggle_dataset(dataset_command, destination_path):
     
     try:
         # Run the Kaggle CLI command to download the dataset
-        result = subprocess.run(dataset_command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print(result.stdout.decode())
+        result = subprocess.run(dataset_command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(result.stdout)
+        if result.stderr:
+            print(result.stderr)
         print("Download completed successfully.")
     except subprocess.CalledProcessError as e:
-        print(f"An error occurred: {e.stderr.decode()}")
+        print(f"An error occurred: {e.stderr}")
 
 def unzip_file(zip_path, extract_to):
     """
@@ -43,7 +45,6 @@ def main():
     download_kaggle_dataset(cybersecurity_breach_command, destination_path)
     
     # Unzip downloaded files
-    # Assuming the downloaded files are in ZIP format
     for file_name in os.listdir(destination_path):
         file_path = os.path.join(destination_path, file_name)
         if file_path.endswith('.zip'):
@@ -51,6 +52,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
 
 
