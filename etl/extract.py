@@ -1,79 +1,57 @@
 import os
-import pandas as pd
-from kaggle.api.kaggle_api_extended import KaggleApi
+import subprocess
+import zipfile
 
-def download_kaggle_dataset(dataset_name, destination_path='data/extracted'):
+def download_kaggle_dataset(dataset_command, destination_path):
     """
-    Downloads a dataset from Kaggle using the Kaggle API.
-
-    Args:
-        dataset_name (str): The Kaggle dataset name in the format 'username/dataset-name'.
-        destination_path (str): The path where the dataset will be downloaded. Default is 'data/extracted'.
+    Download a dataset from Kaggle using the Kaggle CLI command.
     """
-    # Initialize the Kaggle API
-    api = KaggleApi()
-    api.authenticate()
-
-    # Ensure the destination directory exists
-    os.makedirs(destination_path, exist_ok=True)
-
-    # Download the dataset
-    api.dataset_download_files(dataset_name, path=destination_path, unzip=True)
-
-def extract_databreaches_data(csv_filename='databreaches.csv', destination_path='data/extracted'):
-    """
-    Extract data from a CSV file.
-
-    Args:
-        csv_filename (str): The name of the CSV file to extract.
-        destination_path (str): The path where the dataset will be downloaded and extracted.
-    """
-    csv_file_path = os.path.join(destination_path, csv_filename)
-
-    if not os.path.exists(csv_file_path):
-        raise FileNotFoundError(f"The file {csv_file_path} does not exist. Please check the file path.")
+    print(f"Downloading dataset using command: {dataset_command}")
     
-    # Read the CSV file into a DataFrame
-    df = pd.read_csv(csv_file_path)
+    try:
+        # Run the Kaggle CLI command to download the dataset
+        result = subprocess.run(dataset_command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(result.stdout.decode())
+        print("Download completed successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred: {e.stderr.decode()}")
 
-    # Save the DataFrame to a CSV file in the 'data/extracted' directory
-    os.makedirs(destination_path, exist_ok=True)
-    df.to_csv(os.path.join(destination_path, 'databreaches_data.csv'), index=False)
-
-    return df
-
-def extract_cyberbreaches_data(csv_filename='cybersecuritybreaches.csv', destination_path='data/extracted'):
+def unzip_file(zip_path, extract_to):
     """
-    Extract data from a CSV file.
-
-    Args:
-        csv_filename (str): The name of the CSV file to extract.
-        destination_path (str): The path where the dataset will be downloaded and extracted.
+    Unzip a downloaded dataset file.
     """
-    csv_file_path = os.path.join(destination_path, csv_filename)
-
-    if not os.path.exists(csv_file_path):
-        raise FileNotFoundError(f"The file {csv_file_path} does not exist. Please check the file path.")
+    print(f"Unzipping file: {zip_path}")
     
-    # Read the CSV file into a DataFrame
-    df = pd.read_csv(csv_file_path)
-
-    # Save the DataFrame to a CSV file in the 'data/extracted' directory
-    os.makedirs(destination_path, exist_ok=True)
-    df.to_csv(os.path.join(destination_path, 'cyberbreaches_data.csv'), index=False)
-
-    return df
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_to)
+        print(f"Unzipped successfully to: {extract_to}")
+    except Exception as e:
+        print(f"An error occurred while unzipping: {str(e)}")
 
 def main():
-    # Download data from Kaggle
-    download_kaggle_dataset('username/dataset-name', 'data/extracted')
-
-    # Extract data from the CSV files
-    databreaches_data = extract_databreaches_data()
-    cyberbreaches_data = extract_cyberbreaches_data()
+    # Kaggle CLI commands to download the datasets
+    data_breach_command = 'kaggle datasets download -d thedevastator/data-breaches-a-comprehensive-list'
+    cybersecurity_breach_command = 'kaggle datasets download -d alukosayoenoch/cyber-security-breaches-data'
+    destination_path = 'data/extracted'
+    
+    # Create the directory if it doesn't exist
+    os.makedirs(destination_path, exist_ok=True)
+    
+    # Download datasets
+    download_kaggle_dataset(data_breach_command, destination_path)
+    download_kaggle_dataset(cybersecurity_breach_command, destination_path)
+    
+    # Unzip downloaded files
+    # Assuming the downloaded files are in ZIP format
+    for file_name in os.listdir(destination_path):
+        file_path = os.path.join(destination_path, file_name)
+        if file_path.endswith('.zip'):
+            unzip_file(file_path, destination_path)
 
 if __name__ == "__main__":
     main()
+
 
 
 
