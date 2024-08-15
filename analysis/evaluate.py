@@ -21,14 +21,18 @@ def train_and_save_model():
     df = pd.read_csv('data/processed/databreaches_data_transformed.csv')
     
     # Initialize LabelEncoder and encode categorical features
-    le = LabelEncoder()
-    df_encoded = df.apply(lambda col: le.fit_transform(col) if col.dtype == 'object' else col)
-    
+    le_dict = {}
+    df_encoded = df.copy()
+    for column in df_encoded.select_dtypes(include=['object']).columns:
+        le = LabelEncoder()
+        df_encoded[column] = le.fit_transform(df_encoded[column])
+        le_dict[column] = le  # Save the LabelEncoder for each categorical column
+
     # Ensure the model directory exists
     os.makedirs('model', exist_ok=True)
     
-    # Save the LabelEncoder
-    joblib.dump(le, 'model/label_encoder.pkl')
+    # Save the LabelEncoders
+    joblib.dump(le_dict, 'model/label_encoders.pkl')
 
     # Split data
     X = df_encoded.drop(columns=['Organization type'])
@@ -49,14 +53,14 @@ def evaluate_databreaches_model():
     
     The function performs the following steps:
     1. Checks if the model file exists and loads it.
-    2. Loads the test dataset from a CSV file.
-    3. Loads the LabelEncoder and applies it to encode categorical features.
+    2. Loads the LabelEncoder and applies it to encode categorical features.
+    3. Loads the test dataset from a CSV file.
     4. Splits the data into features and target variables.
     5. Predicts the target values using the loaded model.
     6. Evaluates the model's performance using confusion matrix and classification report.
     """
     model_path = 'model/databreaches_model.pkl'
-    le_path = 'model/label_encoder.pkl'
+    le_path = 'model/label_encoders.pkl'
     
     if not os.path.exists(model_path):
         print(f"Model file '{model_path}' does not exist. Please train the model first.")
@@ -69,14 +73,20 @@ def evaluate_databreaches_model():
     # Load the trained model
     model = joblib.load(model_path)
     
-    # Load the LabelEncoder
-    le = joblib.load(le_path)
+    # Load the LabelEncoders
+    le_dict = joblib.load(le_path)
 
     # Load test data
     df = pd.read_csv('data/processed/databreaches_data_transformed.csv')
     
-    # Encode categorical features using the same LabelEncoder
-    df_encoded = df.apply(lambda col: le.transform(col) if col.dtype == 'object' else col)
+    # Encode categorical features using the same LabelEncoders
+    df_encoded = df.copy()
+    for column in df_encoded.select_dtypes(include=['object']).columns:
+        if column in le_dict:
+            df_encoded[column] = le_dict[column].transform(df_encoded[column])
+        else:
+            print(f"Warning: No LabelEncoder found for column '{column}'.")
+            df_encoded[column] = pd.factorize(df_encoded[column])[0]  # Fallback if column not found in le_dict
 
     X_test = df_encoded.drop(columns=['Organization type'])
     y_true = df_encoded['Organization type']
@@ -104,6 +114,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
 
 

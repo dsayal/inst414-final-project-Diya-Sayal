@@ -33,4 +33,4 @@ def create_reference_table(df, file_name):
 
 # Create reference tables for each dataset
 create_reference_table(data_breaches_df, 'data_breaches_reference.csv')
-create_reference_table(cyberbreach_data_df, 'other_data_reference.csv')
+create_reference_table(cyberbreach_data_df, 'CyberBreaches_DataDictionary.csv')
