@@ -31,27 +31,36 @@ def unzip_file(zip_path, extract_to):
     except Exception as e:
         print(f"An error occurred while unzipping: {str(e)}")
 
-def main():
-    # Kaggle CLI commands to download the datasets
+def extract_databreaches_data():
+    """
+    Function to handle the extraction of the data breaches dataset.
+    """
     data_breach_command = 'kaggle datasets download -d thedevastator/data-breaches-a-comprehensive-list'
+    destination_path = 'data/extracted'
+    download_kaggle_dataset(data_breach_command, destination_path)
+    
+    for file_name in os.listdir(destination_path):
+        file_path = os.path.join(destination_path, file_name)
+        if file_path.endswith('.zip'):
+            unzip_file(file_path, destination_path)
+
+def extract_cyberbreaches_data():
+    """
+    Function to handle the extraction of the cyber breaches dataset.
+    """
     cybersecurity_breach_command = 'kaggle datasets download -d alukosayoenoch/cyber-security-breaches-data'
     destination_path = 'data/extracted'
-    
-    # Create the directory if it doesn't exist
-    os.makedirs(destination_path, exist_ok=True)
-    
-    # Download datasets
-    download_kaggle_dataset(data_breach_command, destination_path)
     download_kaggle_dataset(cybersecurity_breach_command, destination_path)
     
-    # Unzip downloaded files
     for file_name in os.listdir(destination_path):
         file_path = os.path.join(destination_path, file_name)
         if file_path.endswith('.zip'):
             unzip_file(file_path, destination_path)
 
 if __name__ == "__main__":
-    main()
+    extract_databreaches_data()
+    extract_cyberbreaches_data()
+
 
 
 

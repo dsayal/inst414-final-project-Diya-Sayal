@@ -15,14 +15,20 @@ def train_and_save_model():
     2. Encodes categorical features to numeric values using LabelEncoder.
     3. Splits the data into training and testing sets.
     4. Initializes and trains a RandomForestClassifier model.
-    5. Saves the trained model to a file.
+    5. Saves the trained model and LabelEncoder to files.
     """
     # Load data
     df = pd.read_csv('data/processed/databreaches_data_transformed.csv')
     
-    # Convert categorical features to numeric using LabelEncoder
+    # Initialize LabelEncoder and encode categorical features
     le = LabelEncoder()
-    df_encoded = df.apply(le.fit_transform)  # Encode all columns
+    df_encoded = df.apply(lambda col: le.fit_transform(col) if col.dtype == 'object' else col)
+    
+    # Ensure the model directory exists
+    os.makedirs('model', exist_ok=True)
+    
+    # Save the LabelEncoder
+    joblib.dump(le, 'model/label_encoder.pkl')
 
     # Split data
     X = df_encoded.drop(columns=['Organization type'])
@@ -44,25 +50,33 @@ def evaluate_databreaches_model():
     The function performs the following steps:
     1. Checks if the model file exists and loads it.
     2. Loads the test dataset from a CSV file.
-    3. Encodes categorical features to numeric values using LabelEncoder.
+    3. Loads the LabelEncoder and applies it to encode categorical features.
     4. Splits the data into features and target variables.
     5. Predicts the target values using the loaded model.
     6. Evaluates the model's performance using confusion matrix and classification report.
     """
     model_path = 'model/databreaches_model.pkl'
+    le_path = 'model/label_encoder.pkl'
+    
     if not os.path.exists(model_path):
         print(f"Model file '{model_path}' does not exist. Please train the model first.")
         return
 
+    if not os.path.exists(le_path):
+        print(f"LabelEncoder file '{le_path}' does not exist. Please train the model first.")
+        return
+
     # Load the trained model
     model = joblib.load(model_path)
+    
+    # Load the LabelEncoder
+    le = joblib.load(le_path)
 
     # Load test data
     df = pd.read_csv('data/processed/databreaches_data_transformed.csv')
     
-    # Convert categorical features to numeric using the same LabelEncoder
-    le = LabelEncoder()
-    df_encoded = df.apply(le.fit_transform)
+    # Encode categorical features using the same LabelEncoder
+    df_encoded = df.apply(lambda col: le.transform(col) if col.dtype == 'object' else col)
 
     X_test = df_encoded.drop(columns=['Organization type'])
     y_true = df_encoded['Organization type']
@@ -90,6 +104,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
 
 
