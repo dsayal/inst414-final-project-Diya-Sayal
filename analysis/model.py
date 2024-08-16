@@ -1,14 +1,15 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier, export_text, export_graphviz
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import joblib
 import os
+import graphviz
 
 def train_and_save_model():
     """
-    Train a model and save it to a file.
+    Train a Decision Tree model and save it to a file.
     """
     # Load data
     df = pd.read_csv('data/processed/databreaches_data_transformed.csv')
@@ -23,16 +24,29 @@ def train_and_save_model():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-    # Initialize and train model
-    model = RandomForestClassifier()
+    # Initialize and train Decision Tree model
+    model = DecisionTreeClassifier(criterion='gini', max_depth=5, random_state=42)
     model.fit(X_train, y_train)
 
     # Save the model
     joblib.dump(model, 'model/databreaches_model.pkl')
 
+    # Visualize the tree as text
+    tree_text = export_text(model, feature_names=list(X_train.columns))
+    print("Decision Tree as Text:\n", tree_text)
+
+    # Visualize the tree as a graph
+    dot_data = export_graphviz(model, out_file=None,
+                               feature_names=list(X_train.columns),
+                               class_names=[str(cls) for cls in le.classes_],
+                               filled=True, rounded=True,
+                               special_characters=True)
+    graph = graphviz.Source(dot_data)
+    graph.render("model/decision_tree")  # This will save the tree as a PDF file
+
 def evaluate_databreaches_model():
     """
-    Evaluate metrics for the databreaches data.
+    Evaluate metrics for the databreaches data using Decision Tree model.
     """
     model_path = 'model/databreaches_model.pkl'
     if not os.path.exists(model_path):
@@ -61,6 +75,8 @@ def evaluate_databreaches_model():
 
     report = classification_report(y_true, y_pred, zero_division=0)
     print("Databreaches Data Classification Report:\n", report)
+
+
 
 
 
