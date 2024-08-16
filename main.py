@@ -52,6 +52,7 @@ def main():
         logging.info("Training and saving model...")
         train_and_save_model()
         check_file_exists('model/databreaches_model.pkl')
+        check_file_exists('model/decision_tree.pdf')  # Check for decision tree visualization
     except Exception as e:
         logging.error(f"Error in model training and saving: {e}")
 
@@ -59,6 +60,7 @@ def main():
     try:
         logging.info("Evaluating model...")
         evaluate_databreaches_model()
+        # Assuming metrics are saved as CSV files, update accordingly
         check_file_exists('outputs/metrics/confusion_matrix.csv')
     except Exception as e:
         logging.error(f"Error in model evaluation: {e}")
@@ -67,6 +69,7 @@ def main():
     try:
         logging.info("Visualizing data...")
         visualize_data()
+        # Update this check if new visualizations are saved
         check_file_exists('outputs/visualizations/your_visualization.png')
     except Exception as e:
         logging.error(f"Error in data visualization: {e}")
@@ -75,6 +78,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
