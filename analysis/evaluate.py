@@ -28,11 +28,11 @@ def train_and_save_model():
         df_encoded[column] = le.fit_transform(df_encoded[column])
         le_dict[column] = le  # Save the LabelEncoder for each categorical column
 
-    # Ensure the model directory exists
-    os.makedirs('model', exist_ok=True)
+    # Ensure the model and outputs directories exist
+    os.makedirs('outputs/model', exist_ok=True)
     
     # Save the LabelEncoders
-    joblib.dump(le_dict, 'model/label_encoders.pkl')
+    joblib.dump(le_dict, 'outputs/model/label_encoders.pkl')
 
     # Split data
     X = df_encoded.drop(columns=['Organization type'])
@@ -45,7 +45,7 @@ def train_and_save_model():
     model.fit(X_train, y_train)
 
     # Save the model
-    joblib.dump(model, 'model/databreaches_model.pkl')
+    joblib.dump(model, 'outputs/model/databreaches_model.pkl')
 
 def evaluate_databreaches_model():
     """
@@ -98,8 +98,18 @@ def evaluate_databreaches_model():
     conf_matrix = confusion_matrix(y_true, y_pred)
     print("Databreaches Data Confusion Matrix:\n", conf_matrix)
 
+    # Ensure the metrics directory exists
+    os.makedirs('data/outputs/metrics', exist_ok=True)
+
+    # Save confusion matrix
+    pd.DataFrame(conf_matrix).to_csv('data/outputs/metrics/confusion_matrix.csv')
+
     report = classification_report(y_true, y_pred, zero_division=0)
     print("Databreaches Data Classification Report:\n", report)
+
+    # Save classification report
+    with open('data/outputs/metrics/classification_report.txt', 'w') as f:
+        f.write(report)
 
 def main():
     """
@@ -114,6 +124,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
