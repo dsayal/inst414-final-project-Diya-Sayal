@@ -1,0 +1,6 @@
+attribute_name,description,data_type,example_value,unit
+attribute_name,Description of attribute_name,object,Entity,
+description,Description of description,object,Name of the entity involved in the data breach ,
+data_type,Description of data_type,object,String ,
+example_vaue,Description of example_vaue,object,21st Century Oncology ,
+unit,Description of unit,float64,N/A,
